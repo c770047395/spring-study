@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="mysqlImpl" class="com.cp.dao.UserDaoMysqlImpl"/>
+    <bean id="oracleImpl" class="com.cp.dao.UserDaoOracleImpl"/>
+    <bean id="userDaoImpl" class="com.cp.dao.UserDaoImpl"/>
+    <bean id="userServiceImpl" class="com.cp.service.UserServiceImpl">
+        <!--
+            ref:引用spring创建好的对象
+            value：具体的值，基本数据类型
+        -->
+        <property name="userDao" ref="userDaoImpl"/>
+    </bean>
+
+</beans>
