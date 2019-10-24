@@ -14,7 +14,8 @@ public class MyTest {
     @Test
     public void test2(){
         ApplicationContext context = new ClassPathXmlApplicationContext("userBeans.xml");
-        User user = context.getBean("user2", User.class);
-        System.out.println(user.toString());
+        User user = context.getBean("user", User.class);
+        User user2 = context.getBean("user", User.class);
+        System.out.println(user==user2);
     }
 }
