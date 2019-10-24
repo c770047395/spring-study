@@ -79,10 +79,13 @@ public class UserServiceImpl implements UserService {
 ### 本质
 控制反转IoC(Inversion of Control)，是一种设计思想，DI(依赖注入)是实现IoC的一种方法，也有人认为DI只是IoC的另一种说法。没有IoC的程序中 , 我们使用面向对象编程 , 对象的创建与对象间的依赖关系完全硬编码在程序中，对象的创建由程序自己控制，控制反转后将对象的创建转移给第三方，个人认为所谓控制反转就是：获得依赖对象的方式反转了。
 
+![](https://img2018.cnblogs.com/blog/1418974/201907/1418974-20190726112837054-601677158.png)
+
 IoC是Spring框架的核心内容，使用多种方式完美的实现了IoC，可以使用XML配置，也可以使用注解，新版本的Spring也可以零配置实现IoC。
 
 Spring容器在初始化时先读取配置文件，根据配置文件或元数据创建与组织对象存入容器中，程序使用时再从Ioc容器中取出需要的对象。
 
+![](https://img2018.cnblogs.com/blog/1418974/201907/1418974-20190726112855074-669998796.png)
 
 采用XML方式配置Bean的时候，Bean的定义信息是和实现分离的，而采用注解的方式可以把两者合为一体，Bean的定义信息直接以注解的形式定义在实现类中，从而达到了零配置的目的。
 
@@ -230,3 +233,142 @@ public class MyTest {
 
 ```
 这种存Java的配置方式，在SpringBoot中随处可见
+
+## 代理模式
+为什么要学习代理模式？因为SpringAOP的底层是代理模式
+代理模式的分类：
+- 静态代理
+- 动态代理
+
+### 静态代理
+角色分析：
+- 抽象角色：一般使用接口或者抽象类
+- 真实角色：被代理的角色
+- 代理角色：代理真实角色，代理真实角色后，一般会做一些附属操作
+- 客户：访问代理对象的人
+
+代码步骤：
+1. 接口
+```java
+//租房
+public interface Rent {
+    public void rent();
+}
+
+```
+2. 真实角色
+```java
+//房东
+public class Host implements Rent {
+    public void rent() {
+        System.out.println("房东要出租房子");
+    }
+}
+
+```
+3. 代理角色
+```java
+public class Proxy implements Rent{
+    private Host host;
+
+    public Proxy() {
+    }
+
+    public Proxy(Host host) {
+        this.host = host;
+    }
+
+    public void rent() {
+        seeHouse();
+        host.rent();
+        hetong();
+        fare();
+    }
+
+    public void seeHouse(){
+        System.out.println("中介带你看房");
+    }
+
+    public void fare(){
+        System.out.println("收中介费");
+    }
+    public void hetong(){
+        System.out.println("签合同");
+    }
+}
+
+```
+4.客户访问代理角色
+```java
+public class Client {
+    public static void main(String[] args) {
+        //房东要租房子
+        Host host = new Host();
+        //代理，中介帮房东租房子，但是代理有一些附属操作
+        Proxy proxy = new Proxy(host);
+        //不用面对房东，直接找中介租房即可
+        proxy.rent();
+    }
+}
+
+```
+代理模式的好处：
+- 可以使真是角色的操作更加纯粹，不用去关注一些公共业务
+- 公共业务交给代理角色，实现业务的分工
+- 公共业务发生拓展的时候，方便集中管理
+
+缺点：
+- 一个真是角色就会产生给一个代理角色；代码量会翻倍，开发效率变低
+
+
+### 动态代理
+- 动态代理和静态代理角色一样
+- 动态代理的代理类是动态生成的，不是我们直接写好的
+- 动态代理分为两大类：基于接口的动态代理，基于类的动态代理
+   - 基于接口：JDK 动态代理
+   - 基于类：cglib
+   - java字节码实现： javassist
+ 
+需要了解两个类：Proxy（代理），InvocationHandler（调用处理程序）
+
+万能动态代理类
+```java
+//自动生成代理类
+public class ProxyInvocationHandler implements InvocationHandler {
+    //处理代理实例，并返回结果
+
+    //被代理的接口
+    private Object target;
+
+    public void setTarget(Object target) {
+        this.target = target;
+    }
+
+    //生成得到代理类
+    public Object getProxy(){
+        return Proxy.newProxyInstance(this.getClass().getClassLoader(),target.getClass().getInterfaces(),this);
+    }
+
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        //动态代理的本质就是使用反射机制实现
+        log(method.getName());
+        Object result = method.invoke(target,args);
+
+        return result;
+    }
+
+    public void log(String msg){
+        System.out.println("执行了"+msg+"方法");
+    }
+
+
+}
+```
+
+动态代理的好处：
+- 可以使真是角色的操作更加纯粹，不用去关注一些公共业务
+- 公共业务交给代理角色，实现业务的分工
+- 公共业务发生拓展的时候，方便集中管理
+- 一个动态代理类代理的是一个接口，一般是对应一个业务
+- 一个动态代理类可以代理多个类，只要实现同一个接口即可
+
