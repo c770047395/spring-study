@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<!--    p命名空间，可以直接注入属性值-->
+    <bean id="user" class="com.cp.pojo.User" p:name="cp" p:age="18"/>
+
+    <bean id="user2" class="com.cp.pojo.User" c:name="cppp" c:age="18"/>
+
+
+</beans>
