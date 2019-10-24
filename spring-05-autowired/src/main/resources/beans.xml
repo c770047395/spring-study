@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd">
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <bean id="cat" class="com.cp.pojo.Cat"/>
-    <bean id="dog" class="com.cp.pojo.Dog"/>
-    <!--
-    byName: 会自动在上下文查找和自己对象set方法后面的值对应的bean id
-    byType: 会自动在上下文找和自己set类型相同的bean
-    -->
-    <bean id="people" class="com.cp.pojo.People" autowire="byType" p:name="cp"/>
+    <bean id="cat123" class="com.cp.pojo.Cat"/>
+    <bean id="dog213" class="com.cp.pojo.Dog"/>
+    <bean id="people" class="com.cp.pojo.People"/>
+<!--    注解支持-->
+    <context:annotation-config/>
+
 
 </beans>
