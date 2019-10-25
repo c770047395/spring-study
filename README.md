@@ -331,6 +331,9 @@ public class Client {
  
 需要了解两个类：Proxy（代理），InvocationHandler（调用处理程序）
 
+Proxy类中的newProxyInstance方法用来获得代理对象，需要传入类加载器、接口数组以及处理器
+InvacationHandler即是处理器接口，重写invoke方法创建一个处理器类，原理是通过反射实现动态加载。
+
 万能动态代理类
 ```java
 //自动生成代理类
