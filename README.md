@@ -539,3 +539,73 @@ public class AnnotationPointCut {
 3. 编写接口
 4. 编写Mapper.xml
 5. 测试
+
+### mybatis-spring
+
+1. 编写数据源配置
+配置datasource
+```xml
+<bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useSSL=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+    <property name="username" value="root"/>
+    <property name="password" value="123456"/>
+</bean>
+```
+
+2. sqlSessionFactory
+配置SqlSessionFactory
+```xml
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="datasource"/>
+        <!--        绑定Mybatis配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:com/cp/dao/*.xml"/>
+
+    </bean>
+```
+3. sqlSessionTemplate
+生成SqlSessionTemplate
+```xml
+<!--    SqlsessionTemplage：就是我们使用的sqlSession-->
+<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+    <!--        只能使用构造器注入sessionFactory，因为他没有set方法-->
+    <constructor-arg index="0" ref="sqlSessionFactory"/>
+</bean>
+```
+4. 需要给接口加实现类[new]
+```java
+public class UserMapperImpl implements UserMapper {
+    //在原来所有操作都是用sqlSession来执行，现在都使用SqlSessionTemplate
+    private SqlSessionTemplate sqlSession;
+
+    public void setSqlSession(SqlSessionTemplate sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+
+    public List<User> selectUser() {
+        return sqlSession.getMapper(UserMapper.class).selectUser();
+    }
+}
+```
+5. 将自己写的实现类注入到Spring中
+```xml
+<bean id="userMapper" class="com.cp.dao.UserMapperImpl">
+    <property name="sqlSession" ref="sqlSession"/>
+</bean>
+```
+
+6. 测试使用
+```java
+public class MyTest {
+    @Test
+    public void test() throws IOException {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        UserMapper userMapper = context.getBean("userMapper", UserMapper.class);
+        List<User> users = userMapper.selectUser();
+        for (User user : users) {
+            System.out.println(user);
+        }
+    }
+}
+```

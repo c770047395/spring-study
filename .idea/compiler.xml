@@ -16,6 +16,7 @@
         <module name="spring-06-anno" />
         <module name="spring-05-autowired" />
         <module name="spring-02-hellospring" />
+        <module name="spring-11-transaction" />
       </profile>
     </annotationProcessing>
   </component>
