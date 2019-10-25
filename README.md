@@ -15,7 +15,7 @@ public class UserDaoImpl implements UserDao {
      }
  }
 ```
-3. 然后去屑UserService的接口
+3. 然后去写UserService的接口
 ```java
 public class UserService{
     void getUser();
@@ -609,3 +609,53 @@ public class MyTest {
     }
 }
 ```
+
+## spring中的事务管理
+- 声明式事务
+- 编程式事务
+
+**声明式事务使用AOP织入，所以除了之前的包之外还要导入Aspectj包**
+```xml
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+```
+
+1. 配置事务通知
+```xml
+<!--    配置事务的通知-->
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+<!--        给哪些方法配置事务-->
+<!--        配置事务的传播特性 propagation-->
+    <tx:attributes>
+        <tx:method name="add" propagation="REQUIRED"/>
+        <tx:method name="delete" propagation="REQUIRED"/>
+        <tx:method name="update" propagation="REQUIRED"/>
+        <tx:method name="query" read-only="true"/>
+        <tx:method name="*" propagation="REQUIRED"/>
+    </tx:attributes>
+
+</tx:advice>
+```
+注意，这里可以用\*代表任意方法，若使用get\*则代表已get开头的任意方法
+
+spring中事务的传播特性有七种：
+   - ROPAGATION_REQUIRED：默认事务类型，如果没有，就新建一个事务；如果有，就加入当前事务。适合绝大多数情况。
+   - PROPAGATION_REQUIRES_NEW：如果没有，就新建一个事务；如果有，就将当前事务挂起。
+   - PROPAGATION_NESTED：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
+   - PROPAGATION_SUPPORTS：如果没有，就以非事务方式执行；如果有，就使用当前事务。
+   - PROPAGATION_NOT_SUPPORTED：如果没有，就以非事务方式执行；如果有，就将当前事务挂起。即无论如何不支持事务。
+   - PROPAGATION_NEVER：如果没有，就以非事务方式执行；如果有，就抛出异常。
+   - PROPAGATION_MANDATORY：如果没有，就抛出异常；如果有，就使用当前事务。
+
+2. 配置事务切入
+```xml
+<!--    配置事务切入-->
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* com.cp.dao.UserMapper.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
+```
+这样就在tx配置的方法中配置好了声明式事务

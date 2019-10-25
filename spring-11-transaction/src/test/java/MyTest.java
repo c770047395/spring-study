@@ -16,4 +16,12 @@ public class MyTest {
             System.out.println(user);
         }
     }
+
+    @Test
+    public void addUser(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        UserMapper userMapper = context.getBean("userMapper", UserMapper.class);
+        userMapper.addUser(new User(8,"1000","123"));
+        userMapper.deleteUser(8);
+    }
 }
