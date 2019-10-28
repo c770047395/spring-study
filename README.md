@@ -332,7 +332,7 @@ public class Client {
 需要了解两个类：Proxy（代理），InvocationHandler（调用处理程序）
 
 Proxy类中的newProxyInstance方法用来获得代理对象，需要传入类加载器、接口数组以及处理器
-InvacationHandler即是处理器接口，重写invoke方法创建一个处理器类，原理是通过反射实现动态加载。
+InvacationHandler即是处理器接口，重写invoke方法执行方法与拓展内容，原理是通过反射实现动态加载。
 
 万能动态代理类
 ```java
@@ -623,7 +623,15 @@ public class MyTest {
         </dependency>
 ```
 
-1. 配置事务通知
+1. 配置声明式事务
+```xml
+<!--    配置声明式事务-->
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+</bean>
+```
+
+2. 配置事务通知
 ```xml
 <!--    配置事务的通知-->
 <tx:advice id="txAdvice" transaction-manager="transactionManager">
@@ -650,7 +658,7 @@ spring中事务的传播特性有七种：
    - PROPAGATION_NEVER：如果没有，就以非事务方式执行；如果有，就抛出异常。
    - PROPAGATION_MANDATORY：如果没有，就抛出异常；如果有，就使用当前事务。
 
-2. 配置事务切入
+3. 配置事务切入
 ```xml
 <!--    配置事务切入-->
     <aop:config>
